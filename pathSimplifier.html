@@ -1,0 +1,197 @@
+<!-- 重点参数：renderOptions -->
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+    <!-- 原始地址：//webapi.amap.com/ui/1.0/ui/misc/PathSimplifier/examples/adjust-style.html -->
+    <!-- <base href="//webapi.amap.com/ui/1.0/ui/misc/PathSimplifier/examples/" /> -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>调整线、点样式</title>
+    <style>
+    html,
+    body {
+        width: 100%;
+        height: 100%;
+        margin: 0px;
+    }
+    
+    #outer-box {
+        height: 100%;
+    }
+    
+    #container {
+        height: 100%;
+        width: 100%;
+    }
+    
+    #panel {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 280px;
+        z-index: 999;
+        height: calc(100% - 5px);
+        overflow: hidden;
+        overflow-y: auto;
+    }
+    
+    
+    .hide {
+        display: none;
+    }
+    
+    #loadingTip {
+        position: absolute;
+        z-index: 9999;
+        top: 0;
+        left: 0;
+        padding: 3px 10px;
+        background: red;
+        color: #fff;
+        font-size: 13px;
+    }
+    
+    
+    </style>
+</head>
+
+<body>
+    <div id="outer-box">
+        <div id="container">
+        </div>
+        <div id="panel">
+            <button id="exportBtn">显示配置信息</button>
+            <div id="my-gui-container"></div>
+        </div>
+    </div>
+    <script type="text/javascript" src='https://webapi.amap.com/maps?v=1.4.15&key=5c2c91506d638f435f61f3ab372d56a6'></script>
+    <!-- <script src="../../../../plug/ext/dat.gui.min.js?v=1.0.11"></script> -->
+    <!-- UI组件库 1.0 -->
+    <script src="https://webapi.amap.com/ui/1.0/main.js?v=1.0.11"></script>
+    <script type="text/javascript">
+    //创建地图
+    var map = new AMap.Map('container', {
+        zoom: 4
+    });
+
+    AMapUI.load(['ui/misc/PathSimplifier', 'lib/$', 'lib/utils'], function(PathSimplifier, $, utils) {
+
+        if (!PathSimplifier.supportCanvas) {
+            alert('当前环境不支持 Canvas！');
+            return;
+        }
+
+        var defaultRenderOptions = {
+            renderAllPointsIfNumberBelow: -1,
+            pathTolerance: 2,
+            keyPointTolerance: 0,
+            pathLineStyle: {
+                lineWidth: 3,
+                strokeStyle: '#F7B538',
+                borderWidth: 1,
+                borderStyle: '#eeeeee',
+                dirArrowStyle: false
+            },
+            pathLineHoverStyle: {
+                lineWidth: 3,
+                strokeStyle: 'rgba(204, 63, 88,1)',
+                borderWidth: 1,
+                borderStyle: '#cccccc',
+                dirArrowStyle: false
+            },
+            pathLineSelectedStyle: {
+                lineWidth: 6,
+                strokeStyle: '#C11534',
+                borderWidth: 1,
+                borderStyle: '#cccccc',
+                dirArrowStyle: true
+            },
+            dirArrowStyle: {
+                stepSpace: 35,
+                strokeStyle: '#ffffff',
+                lineWidth: 2
+            },
+            startPointStyle: {
+                radius: 4,
+                fillStyle: '#109618',
+                lineWidth: 1,
+                strokeStyle: '#eeeeee'
+            },
+            endPointStyle: {
+                radius: 4,
+                fillStyle: '#dc3912',
+                lineWidth: 1,
+                strokeStyle: '#eeeeee'
+            },
+            keyPointStyle: {
+                radius: 3,
+                fillStyle: 'rgba(8, 126, 196, 1)',
+                lineWidth: 1,
+                strokeStyle: '#eeeeee'
+            },
+            keyPointHoverStyle: {
+                radius: 4,
+                fillStyle: 'rgba(0, 0, 0, 0)',
+                lineWidth: 2,
+                strokeStyle: '#ffa500'
+            },
+            keyPointOnSelectedPathLineStyle: {
+                radius: 4,
+                fillStyle: 'rgba(8, 126, 196, 1)',
+                lineWidth: 2,
+                strokeStyle: '#eeeeee'
+            }
+        };
+
+        var pathSimplifierIns = new PathSimplifier({
+
+            zIndex: 100,
+
+            map: map,
+
+            getPath: function(pathData, pathIndex) {
+
+                return pathData.path;
+            },
+            getHoverTitle: function(pathData, pathIndex, pointIndex) {
+
+                if (pointIndex >= 0) {
+                    //point 
+                    return pathData.name + '，点:' + pointIndex + '/' + pathData.path.length;
+                }
+
+                return pathData.name + '，点数量' + pathData.path.length;
+            },
+            renderOptions: defaultRenderOptions
+        });
+
+        window.pathSimplifierIns = pathSimplifierIns;
+
+        $('<div id="loadingTip">加载数据，请稍候...</div>').appendTo(document.body);
+
+        $.getJSON('https://a.amap.com/amap-ui/static/data/big-routes.json', function(d) {
+
+            $('#loadingTip').remove();
+
+            pathSimplifierIns.setData(d);
+
+            pathSimplifierIns.setSelectedPathIndex(1);
+
+            // var navg = pathSimplifierIns.createPathNavigator(7, {
+            //     loop: true,
+            //     speed: 300000
+            // });
+
+            // navg.start();
+
+            // window.navg=navg;
+        });
+
+        
+        render();
+    });
+    </script>
+</body>
+
+</html>
