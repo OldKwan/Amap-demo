@@ -30,6 +30,46 @@
 </head>
 
 <body>
+    <!-- 
+        常用方法列表
+        getZoom( ) 
+        获取当前地图缩放级别，在PC上，默认取值范围为[3,18]；在移动设备上，
+        默认取值范围为[3-19]。3D地图会返回浮点数，2D视图为整数。
+
+        setZoom(level:Number)
+        设置地图显示的缩放级别，在PC上，参数zoom可设范围：[3,18]；在移动端：
+        参数zoom可设范围：[3,19]。3D地图下，可将zoom设置为浮点数。
+
+        getCenter( )
+        获取地图中心点经纬度坐标值。
+
+        setCenter(position: LngLat)
+        设置地图显示的中心点。
+
+        setZoomAndCenter(zoomLevel:Number,center:LngLat)
+        地图缩放至指定级别并以指定点为地图显示中心点。
+
+        getBounds( )
+        获取当前地图视图范围。3D地图下返回类型为AMap.ArrayBounds，2D地图下仍返回AMap.Bounds 。
+
+        setBounds(bound:Bounds)
+        指定当前地图显示范围，参数bounds为指定的范围。
+
+        getCity(callback:function(result))
+        获取地图中心点所在区域，回调函数返回对象属性分别对应为{省，市，区/县}。
+
+        setCity(city:String，callback:Functon)
+        按照行政区名称或adcode来设置地图显示的中心点。行政区名称支持中国、省、市、区/县名称，
+        如遇重名的情况，会按城市编码表顺序返回第一个。adcode请在城市编码表中查询。
+        建议不要同时使用center/setCenter()和setCity()，如一起使用程序将以setCity()作为最后结果。
+
+        panTo(positon:LngLat)
+        地图中心点平移至指定点位置。
+
+        setStatus(status:Object)
+        设置当前地图显示状态，包括是否可鼠标拖拽移动地图、地图是否可缩放、地图是否可旋转（rotateEnable）、
+        是否可双击放大地图、是否可以通过键盘控制地图旋转（keyboardEnable）等。  
+     -->
     <div id="container">
     </div>
     <div id="panel">
