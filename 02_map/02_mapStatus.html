@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        #container {width: 100%; height: 100%; }  
+        #btn{
+            position: fixed;
+            right: 2%;
+            bottom: 5%;
+        }
+        #btn2{
+            position: fixed;
+            right: 2%;
+            bottom: 12%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+    </div>
+    <div id="panel">
+    </div>
+    <button id="btn">change</button>
+    <button id="btn2">change2</button>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript"
+        src='https://webapi.amap.com/maps?v=1.4.15&key=5c2c91506d638f435f61f3ab372d56a6'></script>
+    <script>
+        var map = new AMap.Map('container', {
+            zoom: 12,
+            center: [116.39, 39.9]
+        })
+
+        let currentZoom = map.getZoom();
+        let currentCenter = map.getCenter();
+        console.log('zoom: ', currentZoom);
+        console.log('center: ', currentCenter);
+        
+
+        $('#btn').on('click', ()=>{
+            map.setZoom(10)
+            map.setCenter([110, 38])
+            let currentZoom = map.getZoom();
+            let currentCenter = map.getCenter();
+            console.log('zoom: ', currentZoom);
+            console.log('center: ', currentCenter);
+        })
+        $('#btn2').on('click', ()=>{
+            map.setZoomAndCenter(6, [110, 24])
+            let currentZoom = map.getZoom();
+            let currentCenter = map.getCenter();
+            console.log('zoom: ', currentZoom);
+            console.log('center: ', currentCenter);
+        })
+        
+    </script>
+</body>
+
+</html>

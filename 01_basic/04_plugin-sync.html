@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        #container {width: 100%; height: 100%; }  
+    </style>
+</head>
+
+<body>
+    <div id="container">
+    </div>
+    <div id="panel">
+    </div>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript"
+        src='https://webapi.amap.com/maps?v=1.4.15&key=5c2c91506d638f435f61f3ab372d56a6&plugin=AMap.ToolBar,AMap.Driving'></script>
+    <script>
+        var map = new AMap.Map('container', {
+            zoom: 12,
+            center: [116.39, 39.9]
+        });
+
+        var toolbar = new AMap.ToolBar();
+        map.addControl(toolbar);
+        var driving = new AMap.Driving();
+        driving.search();
+    </script>
+</body>
+
+</html>
