@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        #container {width: 100%; height: 100%; }  
+    </style>
+</head>
+
+<body>
+    <!-- 
+        AMap.MassMarks 并不是普通的覆盖物，它实际上是由海量点组成的一个地图图层， 
+        目前仅适用于html5浏览器。
+     -->
+    <div id="container">
+    </div>
+    <div id="panel">
+    </div>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript"
+        src='https://webapi.amap.com/maps?v=1.4.15&key=5c2c91506d638f435f61f3ab372d56a6'></script>
+    <!-- <script type="text/javascript"
+        src='https://webapi.amap.com/maps?v=1.4.15&key=5c2c91506d638f435f61f3ab372d56a6&plugin=ElasticMarker,MassMarks'></script> -->
+    <script>
+        var map = new AMap.Map('container', {
+            zoom: 12,
+            center: [116.39,39.9]
+        })
+        var arr = [
+            new AMap.LngLat("116.368904","39.913423"),
+            new AMap.LngLat("116.382122","39.901176"),
+            new AMap.LngLat("116.387271","39.912501"),
+            new AMap.LngLat("116.398258","39.904600")
+        ]
+        var data = arr.map((v,i)=>{
+            return {
+                lnglat: v,
+                name: 'point'+i,
+                id: i+1
+            }
+        })
+        console.log(data);
+        var styleObject = {
+            url: '//vdata.amap.com/icons/b18/1/2.png',
+            size: new AMap.Size(50,50),
+            anchor: new AMap.Pixel(25,25)
+        };
+        var massMarks = new AMap.MassMarks(data,{
+            zIndex: 5,
+            zooms: [3,19],
+            style: styleObject
+        });
+
+        
+        
+        // // set massMarks option
+        // massMarks.setData(data);
+
+        // set massMarks to map
+        massMarks.setMap(map);
+    </script>
+</body>
+
+</html>
