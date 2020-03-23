@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        #container {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+    </div>
+    <div id="panel">
+    </div>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript"
+        src='https://webapi.amap.com/maps?v=1.4.15&key=5c2c91506d638f435f61f3ab372d56a6&plugin=AMap.DistrictLayer,Scale,ToolBar'></script>
+    <script>
+        var SOC = 'CHN';
+        var colors = {};
+        var GDPSpeed = {
+            '520000': 10,//贵州
+            '540000': 10,//西藏
+            '530000': 8.5,//云南 
+            '500000': 8.5,//重庆
+            '360000': 8.5,//江西
+            '340000': 8.0,//安徽
+            '510000': 7.5,//四川
+            '350000': 8.5,//福建
+            '430000': 8.0,//湖南
+            '420000': 7.5, //湖北
+            '410000': 7.5,//河南
+            '330000': 7.0,//浙江
+            '640000': 7.5,//宁夏
+            '650000': 7.0,//新疆
+            '440000': 7.0,//广东
+            '370000': 7.0,//山东
+            '450000': 7.3,//广西
+            '630000': 7.0,//青海
+            '320000': 7.0,//江苏
+            '140000': 6.5,//山西
+            '460000': 7,// 海南
+            '310000': 6.5,//上海
+            '110000': 6.5, // 北京
+            '130000': 6.5, // 河北
+            '230000': 6, // 黑龙江
+            '220000': 6,// 吉林
+            '210000': 6.5, //辽宁
+            '150000': 6.5,//内蒙古
+            '120000': 5,// 天津
+            '620000': 6,// 甘肃
+            '610000': 8.5,// 甘肃
+            '710000': 2.64, //台湾
+            '810000': 3.0, //香港
+            '820000': 4.7 //澳门
+        }
+        // 国家 fill颜色生成函数
+        function getColorBySOC(SOC) {
+            if (SOC) {
+                if (!colors[SOC]) {
+                    var R = SOC.charCodeAt(0) * 1;
+                    var G = SOC.charCodeAt(1) * 2;
+                    var B = SOC.charCodeAt(2) * 4;
+                    colors[SOC] = "rgb(" + R + ',' + G + ',' + B + ')';
+                }
+                return colors[SOC]
+            } else {
+                return 'rgb(200, 200, 240)'
+            }
+        }
+        // 省份 fill颜色生成函数
+        function getColorByDGP(adcode){
+            if(!colors[adcode]){
+                var gdp = GDPSpeed[adcode];
+                if(!gdp){
+                    colors[adcode] = 'rgb(227,227,227)'
+                }else{
+                    var rg = 255-Math.floor((gdp-5)/5*255);
+                    colors[adcode] = 'rgb(' + rg + ',' + rg + ',225)';
+                }
+            }
+            return colors[adcode];
+        }
+        // 市级 fill颜色生成函数
+        function getColorByAdcode(adcode){
+            if(!colors[adcode]){
+                var gb = Math.random()*155 + 50;
+                colors[adcode] = 'rgb(' + gb + ',' + gb + ',255)';
+            }
+            return colors[adcode];
+        };
+
+        // world
+        var disWorld = new AMap.DistrictLayer.World({
+            zIndex: 10,
+            styles: {
+                'nation-stroke': function (props) {
+                    if (props.type == 'Nation_Border_China') {
+                        return 'red'
+                    } else {
+                        return 'white'
+                    }
+                },
+                'coastline-stroke': function (props) {
+                    if (props.type == "Coastline_China") {
+                        return 'red'
+                    } else {
+                        return 'white'
+                    }
+                },
+                'fill': function (props) {
+                    return getColorBySOC(props.SOC)
+                }
+            }
+        })
+
+        // china
+        var disCountry = new AMap.DistrictLayer.Country({
+            zIndex: 10,
+            SOC: 'CHN',
+            depth: 2,
+            styles: {
+                'nation-stroke': '#22ffff',
+                'coastline-stroke': [0.8, 0.63, 0.94, 1],
+                'province-stroke': 'white',
+                'city-stroke': 'rgba(255, 255, 255, 0.5)',
+                'fill': function (props) {
+                    return getColorByDGP(props.adcode_pro)
+                }
+            }
+        });
+
+        // province
+        var disProvince = new AMap.DistrictLayer.Province({
+            zIndex: 12,
+            adcode: ['130000'],
+            depth: 2,
+            styles: {
+                fill: function(properties){
+                    var adcode = properties.adcode;
+                    return getColorByAdcode(adcode);
+                },
+                'province-stroke': 'cornflowerblue',
+                'city-stroke': 'white',
+                'county-stroke': 'rgba(225,225,225,0.5)'
+            }
+        });
+
+        var map = new AMap.Map('container', {
+            center: [100, 36],
+            zoom: 3,
+            layers: [
+                // disWorld
+                disCountry,
+                disProvince
+            ],
+        })
+    </script>
+</body>
+
+</html>

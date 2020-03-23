@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        #container {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+    </div>
+    <div id="panel">
+    </div>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript"
+        src='https://webapi.amap.com/maps?v=1.4.15&key=5c2c91506d638f435f61f3ab372d56a6'></script>
+    <script>
+        var map = new AMap.Map('container', {
+            center: [116.5,39.25],
+            zoom: 12,
+            viewMode:'3D'
+        })
+        var object3Dlayer = new AMap.Object3DLayer();
+
+
+        var rectangle = new AMap.Object3D.Mesh();
+        var geometry = rectangle.geometry; //获取几何集合   
+        
+        var lnglat1 = new AMap.LngLat(116.39, 39.9);
+        var lnglat2 = new AMap.LngLat(116.40, 39.9);
+
+        var v0xy = map.lngLatToGeodeticCoord(lnglat1);
+        var v1xy = map.lngLatToGeodeticCoord(lnglat2);
+        var z = -50000;
+        
+        geometry.vertices.push(v0xy.x, v0xy.y, 0); //v0
+        geometry.vertices.push(v1xy.x, v1xy.y, 0); //v1
+        geometry.vertices.push(v1xy.x, v1xy.y, z); //v2
+        geometry.vertices.push(v0xy.x, v0xy.y, z); //v3
+
+        geometry.faces.push(0,1,3);
+        geometry.faces.push(1,2,3);
+
+        // 四个顶点赋予颜色值
+        geometry.vertexColors.push(1,0,0,1);
+        geometry.vertexColors.push(0,1,0,1);
+        geometry.vertexColors.push(0,0,1,1);
+        geometry.vertexColors.push(0,1,1,1);
+        // 是否 看到透明混合的效果
+        rectangle.transparent = false;
+
+        // 使用纹理图片
+        // rectangle.textures.push("https://a.amap.com/jsapi_demos/static/tourist/crate.gif");
+        // geometry.vertexUVs.push(0,1);
+        // geometry.vertexUVs.push(1,1);
+        // geometry.vertexUVs.push(1,0);
+        // geometry.vertexUVs.push(0,0);
+
+
+        // 棱柱 prism
+        var bounds = [
+            new AMap.LngLat(116.5,39.25),
+            new AMap.LngLat(116.75,39.5),
+            new AMap.LngLat(116.5,39.75),
+            new AMap.LngLat(116.25,39.5)
+        ]
+        var height = 50000;          
+        // var color = [0,0,1,0.6];
+        var color = 'rgba(100, 150, 230, 0.7)';
+
+        var prism2 = new AMap.Object3D.Prism({
+            path: bounds,
+            height: height,
+            color: color
+        });
+        prism2.transparent = true
+
+        rectangle.backOrFront = 'both';//'back'、'front'、'both'
+        // 3D图层添加 3D对象不能以数组形式添加, 只能一个一个 add
+        window.onload = function(){
+            object3Dlayer.add(rectangle)
+            object3Dlayer.add(prism2)
+            map.add(object3Dlayer);
+        }
+
+
+    </script>
+</body>
+
+</html>

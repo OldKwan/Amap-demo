@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        #container {
+            width: 100%;
+            height: 100%;
+        }
+
+        #btn {
+            position: fixed;
+            right: 2%;
+            bottom: 5%;
+        }
+
+        #btn2 {
+            position: fixed;
+            right: 2%;
+            bottom: 12%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+    </div>
+    <div id="panel">
+    </div>
+    <button id="btn">normal</button>
+    <button id="btn2">advance</button>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript"
+        src='https://webapi.amap.com/maps?v=1.4.15&key=5c2c91506d638f435f61f3ab372d56a6&plugin=AMap.AdvancedInfoWindow'></script>
+    <script>
+        var map = new AMap.Map('container', {
+            zoom: 12,
+            center: [116.39, 39.9]
+        })
+        var content = ["<div><img src='https://webapi.amap.com/theme/v1.3/logo@2x.png'> ",
+            "<div style='padding:0px'><b>高德软件有限公司</b>",
+            "电话 : 010-84107000   邮编 : 100102",
+            "地址 : 北京市望京阜通东大街方恒国际中心A座16层</div></div>"];
+        // infoWindow
+        var infoWindow = new AMap.InfoWindow({
+            content: content.join('<br />')
+        });
+        // AdvancedInfoWindow
+        var advanceContent = ['<div class="infowindow-content">',
+            '<div class="amap-info-header">方恒国际中心</div>',
+            '<div class="amap-info-body">阜通东大街6号</div></div>'];
+        var advancedInfoWindow;
+        map.plugin('AMap.AdvancedInfoWindow', () => {
+            advancedInfoWindow = new AMap.AdvancedInfoWindow({
+                panel: 'panel',
+                placeSearch: true,
+                asOrigin: true,
+                asDestination: true,
+                content: advanceContent.join('<br />')
+            });
+        })
+
+        var flag = true,
+            flag2 = true
+        $('#btn').on('click', () => {
+            if (flag) {
+                infoWindow.open(map, [116.401337, 39.907886]);
+            } else {
+                infoWindow.close()
+            }
+            flag = !flag;
+        })
+
+        $('#btn2').on('click', () => {
+            if (flag2) {
+                advancedInfoWindow.open(map, [116.401317, 39.907186]);
+            } else {
+                advancedInfoWindow.close()
+            }
+            flag2 = !flag2;
+
+        })
+
+        // contentMenu
+        var contentMenu = ['<div class="context-menu-content">',
+            '<ul class="context_menu">',
+            '<li onclick="zoomMenu(0)">缩小</li>',
+            '<li class="split_line" onclick="zoomMenu(1)">放大</li>',
+            '<li onclick="distanceMeasureMenu()">测量距离</li>',
+            '<li onclick="addMarkerMenu()">添加标记</li>',
+            '</ul>',
+            '</div>'];
+        var contextMenu = new AMap.ContextMenu({
+            isCustom: true,
+            content: contentMenu.join('<br />')
+        });
+
+        window.zoomMenu = function zoomMenu(tag) {//右键菜单缩放地图
+            if (tag === 0) {
+                map.zoomOut();
+            }
+            if (tag === 1) {
+                map.zoomIn();
+            }
+            contextMenu.close();
+        };
+
+        window.distanceMeasureMenu = function () {  //右键菜单距离量测
+            contextMenu.close();
+        };
+
+        var contextMenuPositon;
+        window.addMarkerMenu = function () {  //右键菜单添加Marker标记
+            console.log(11);
+            var marker = new AMap.Marker({
+                map: map,
+                position: contextMenuPositon //基点位置
+            });
+            contextMenu.close();
+        };
+        
+        map.on('rightclick', (e) => {
+            contextMenuPositon = e.lnglat;
+            contextMenu.open(map, e.lnglat);
+        })
+
+    </script>
+</body>
+
+</html>
