@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        #container {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+    </div>
+    <div id="panel">
+    </div>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript"
+        src='https://webapi.amap.com/maps?v=1.4.15&key=5c2c91506d638f435f61f3ab372d56a6&plugin=AMap.Driving'></script>
+    <script>
+        var map = new AMap.Map('container', {
+            center: [116.39, 39.9],
+            zoom: 14
+        })
+
+        function concatPath(steps) {
+            var path = [];
+            steps.forEach(v => {
+                // v.path.forEach(i=>{
+                //     path.push(i);
+                // })
+                path = [...path, ...v.path]
+            })
+            return path
+        }
+
+        AMap.plugin('AMap.Driving', () => {
+            var driving = new AMap.Driving({
+                policy: AMap.DrivingPolicy.LEAST_TIME
+            })
+
+
+
+            // 添加途径点
+            var opts = {
+                // 途经点, 最多支持 16个途经点
+                waypoints: [
+                    {
+                        keyword: '北京站', city: '北京'
+                    }
+                ]
+            };
+            var points = [
+                { keyword: '北京市地震局（公交站）', city: '北京' },
+                { keyword: '亦庄文化园（地铁站）', city: '北京' }
+            ]
+
+            // // 设置起始点
+            // var start = [116.379028, 39.865042];
+            // var end = [116.427281, 39.903719];
+            // driving.search(start, end, (status, result) => {
+            //     console.log(result);
+            //     console.log(concatPath(result.routes[0].steps));
+            // })
+
+
+            driving.search(points, opts, function (status, result) {
+                // 未出错时，result即是对应的路线规划方案
+                console.log(result);
+            })
+        })
+
+
+    </script>
+</body>
+
+</html>
