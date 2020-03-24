@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        #container {width: 100%; height: 100%; }  
+    </style>
+</head>
+
+<body>
+    <div id="container">
+    </div>
+    <div id="panel">
+    </div>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript"
+        src='https://webapi.amap.com/maps?v=1.4.15&key=5c2c91506d638f435f61f3ab372d56a6'></script>
+    <script>
+        var map = new AMap.Map('container', {
+            resizeEnable: true,
+            zoom: 14,
+            zooms: [3,20],
+            expandZoomRange: true
+        });
+
+        // 模拟水印
+        var layer = new AMap.TileLayer.Flexible({
+            cacheSize: 30,
+            opacity: 0.3,
+            createTile: function(x,y,z,success, fail){
+                if((x+y)%3){
+                    fail();
+                    return;
+                }
+
+                var img = document.createElement('img');
+                img.onload = function(){
+                    success(img);
+                };
+                // img.crossOrigin = "anoymous"; // 3D的时候添加, 同时图片要有跨域头
+                img.onerror = function(){
+                    fail()
+                };
+
+                img.src = "https://a.amap.com/jsapi_demos/static/images/amap.png"
+            }
+        });
+        layer.setMap(map)
+    </script>
+</body>
+
+</html>
