@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        #container {width: 100%; height: 100%; } 
+        #tipinput {
+            position: fixed;
+            top: 5%;
+            left: 10%;
+        } 
+    </style>
+</head>
+
+<body>
+    <div id="container">
+    </div>
+    <div id="panel">
+    </div>
+    <input type="text" name="" id="tipinput">
+
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript"
+        src='https://webapi.amap.com/maps?v=1.4.15&key=5c2c91506d638f435f61f3ab372d56a6'></script>
+    <script src="//webapi.amap.com/ui/1.0/main.js?v=1.0.11"></script>
+    <script>
+        var map = new AMap.Map('container', {
+            zoom: 12
+        })
+
+        AMapUI.loadUI(['misc/PoiPicker'], (PoiPicker)=>{
+            var poiPicker = new PoiPicker({
+                // city: '北京'
+                input: 'tipinput'
+            });
+
+            // 初始化 poiPicker
+            poiPickerReady(poiPicker);
+        })
+
+        function poiPickerReady(poiPicker){
+            window.poiPicker = poiPicker;
+            var marker = new AMap.Marker();
+            var infoWindow = new AMap.InfoWindow({
+                offset: new AMap.Pixel(0, -20)
+            });
+
+            // 选取某个 POI
+            poiPicker.on('poiPicked', (poiResult)=>{
+                var source = poiResult.source,
+                poi = poiResult.item,
+                info = {
+                    source: source,
+                    id: poi.id,
+                    name: poi.name,
+                    location: poi.location.toString(),
+                    address: poi.address
+                };
+                marker.setMap(map);
+                infoWindow.setMap(map);
+
+                marker.setPosition(poi.location);
+                infoWindow.setPosition(poi.location);
+                infoWindow.setContent('POI信息: <pre>'+JSON.stringify(info,null,2)+'</pre>');
+                infoWindow.open(map, marker.getPosition());
+            });
+
+            poiPicker.onCityReady(()=>{
+                poiPicker.suggest('美食')
+            })
+        }
+    </script>
+</body>
+
+</html>

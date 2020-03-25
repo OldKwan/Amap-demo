@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        #container {
+            width: 100%;
+            height: 100%;
+        }
+
+        #tipinput {
+            position: fixed;
+            top: 5%;
+            left: 10%;
+        }
+        #panel {
+            position: absolute;
+            background-color: white;
+            max-height: 90%;
+            overflow-y: auto;
+            top: 10px;
+            right: 10px;
+            width: 280px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+    </div>
+    <div id="panel">
+    </div>
+    <input type="text" name="" id="tipinput">
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript"
+        src='https://webapi.amap.com/maps?v=1.4.15&key=5c2c91506d638f435f61f3ab372d56a6&plugin=AMap.Autocomplete,AMap.PlaceSearch'></script>
+    <script>
+        var map = new AMap.Map('container', {
+            center: [116.39, 39.9],
+            zoom: 14
+        })
+
+        // 关键字联想
+        var auto = new AMap.Autocomplete({
+            //城市, 默认全国
+            city: '北京',
+            // 可选, 用于指定一个 input框; 在其下方自动生成 autocomplete列表
+            input: "tipinput"
+        });
+
+        
+        
+
+        // POI搜索
+        var placeSearch = new AMap.PlaceSearch({
+            map: map, // 展现结果的地图实例
+            panel: "panel", // 结果列表将在此容器中进行展示。
+            autoFitView: true, // 是否自动调整地图视野使绘制的 Marker点都处于视口的可见范围s
+            // city 指定搜索所在城市，支持传入格式有：城市名、citycode和adcode
+            city: '010'
+        })
+
+        placeSearch.search('北京大学');
+
+        AMap.event.addListener(auto, 'select', function(e){
+            //TODO 针对选中的poi实现自己的功能
+            placeSearch.search(e.poi.name)
+        })
+        // placeSearch.search('北京大学', function (status, result) {
+        //     // 查询成功时，result即对应匹配的POI信息
+        //     console.log(status);
+        //     console.log(result);
+        // })
+
+    </script>
+</body>
+
+</html>

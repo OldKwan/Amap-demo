@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" />
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        #container {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 
+        行政区查询服务
+            行政区查询服务（AMap.DistrictSearch）提供行政区信息的查询，使用该服务可以获取到行政区域的区号、
+            城市编码、中心点、边界、下辖区域等详细信息，为基于行政区域的地图功能提供支持。
+        
+        
+        地理编码包含正向地理编码和逆向地理编码两种：
+
+            正向地理编码： 将地址描述信息转换成地理坐标（经纬度），对应为AMap.Geocoder的getLocation方法
+            逆向地理编码：将地理坐标（经纬度）转换成地址描述信息，对应为AMap.Geocoder的getAddress方法
+     -->
+    <div id="container"></div>
+
+    <div class="input-card">
+        <h4>下属行政区查询</h4>
+        <div class="input-item">
+            <div class="input-item-prepend"><span class="input-item-text">省市区</span></div>
+            <select id='province' style="width:100px" onchange='search(this)'></select>
+        </div>
+        <div class="input-item">
+            <div class="input-item-prepend"><span class="input-item-text">地级市</span></div>
+            <select id='city' style="width:100px" onchange='search(this)'></select>
+        </div>
+        <div class="input-item">
+            <div class="input-item-prepend"><span class="input-item-text">区县</span></div>
+            <select id='district' style="width:100px" onchange='search(this)'></select>
+        </div>
+        <div class="input-item">
+            <div class="input-item-prepend"><span class="input-item-text">街道</span></div>
+            <select id='street' style="width:100px" onchange='setCenter(this)'></select>
+        </div>
+    </div>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript"
+        src='https://webapi.amap.com/maps?v=1.4.15&key=5c2c91506d638f435f61f3ab372d56a6&plugin=AMap.DistrictSearch'></script>
+    <script>
+        var map, district, polygons = [], citycode;
+        var citySelect = document.getElementById('city');
+        var districtSelect = document.getElementById('district');
+        var areaSelect = document.getElementById('street');
+
+        map = new AMap.Map('container', {
+            zoom: 3,
+            center: [116.39, 39.9]
+        })
+
+        // 行政区划分查询
+        var opts = {
+            subdistrict: 1, //返回下一级行政区
+            showbiz: false  //最后一级返回街道信息
+        };
+        district = new AMap.DistrictSearch(opts);
+        // 区域搜索: 获取中国行政地图信息
+        district.search('中国', (status, result)=>{
+            if(status == 'complete'){
+                getData(result.districtList[0]);
+            }
+        });
+
+        function getData(data, level){
+            // 获取边界, setFixView; 根据边界信息, 生成中国形状 "鸡型"
+            var bounds = data.boundaries;
+            if(bounds){
+                bounds.forEach(v=>{
+                    var polygon = new AMap.Polygon({
+                        map: map,
+                        strokeWeight: 1,
+                        strokeColor: '#0091ea',
+                        fillColor: '#80d8ff',
+                        fillOpacity: 0.2,
+                        path: v
+                    });
+                    polygons.push(polygon);
+                });
+                map.setFitView();
+            }
+
+            // 用户没错获取数据, 清除历史子级数据
+            // 清空下一级别的下拉列表
+            if(level === 'province'){
+                citySelect.innerHTML = '';
+                districtSelect.innerHTML = '';
+                areaSelect.innerHTML = '';
+            } else if (level === 'city'){
+                districtSelect.innerHTML = '';
+                areaSelect.innerHTML = '';
+            } else if (level === 'district'){
+                areaSelect.innerHTML = '';
+            }
+
+            var subList = data.districtList;
+            if(subList){
+                var contentSub = new Option("--请选择--");
+                var curlevel = subList[0].level; //可取值: province/city/district/street
+                var curList = document.querySelector('#'+curlevel);
+                curList.add(contentSub); // 设置默认首项: "--请选择--"
+                // 将数据列表遍历添加 多选项
+                subList.forEach(v=>{
+                    contentSub = new Option(v.name);
+                    // 不同级别的识别标识: value
+                    contentSub.setAttribute('value', v.level);
+                    contentSub.center = v.center;
+                    contentSub.adcode = v.adcode;
+                    curList.add(contentSub);
+                })
+            }
+        }
+
+        function search(obj){
+            // 清除地图上所有覆盖物
+            polygons.forEach(v=>{v.setMap(null)});
+
+            var option = obj[obj.options.selectedIndex];
+            var keyword = option.text;
+            var adcode = option.adcode;
+            district.setLevel(option.value); //行政区级别
+            district.setExtensions('all');
+            // 行政区查询
+            // 按照 adcode 进行查询可以保证数据返回的唯一性
+            district.search(adcode, (status, result)=>{
+                if(status == 'complete'){
+                    getData(result.districtList[0], obj.id);
+                }
+            })
+        }
+
+        function setCenter(obj){
+            map.setCenter(obj[obj.options.selectedIndex].center)
+        }
+    </script>
+</body>
+
+</html>
