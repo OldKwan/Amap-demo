@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        #container {width: 100%; height: 100%; }  
+    </style>
+</head>
+
+<body>
+    <div id="container">
+    </div>
+    <div id="panel">
+    </div>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript"
+        src='https://webapi.amap.com/maps?v=1.4.15&key=5c2c91506d638f435f61f3ab372d56a6&plugin=AMap.CitySearch,AMap.Weather'></script>
+    <script>
+        var map = new AMap.Map('container');
+        // AMap.plugin('AMap.CitySearch', ()=>{
+        //     var citySearch = new AM
+        // })
+        // 获取城市信息
+        var citySearch = new AMap.CitySearch();
+        citySearch.getLocalCity((status, result)=>{
+            if(status === 'complete'&& result.info==='OK'){
+                console.log(result);
+            }
+        })
+
+        // 获取天气信息
+        var weather = new AMap.Weather();
+        weather.getLive('深圳市', (err, data)=>{
+            console.log(err);
+            console.log(data);
+        })
+    </script>
+</body>
+
+</html>
